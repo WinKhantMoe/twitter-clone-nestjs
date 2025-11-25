@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id String @id @default(uuid())
+  username String?
+  userTag String @unique 
+  password String?
+  phone Int? @unique
+  email String? @unique
+  user_profile_image String?
+  day Int 
+  month String
+  year Int
+  tweets Tweet[]
+  retweets Retweet[]
+  replies Reply[]
+  likes Like[]
+}
+model Tweet {
+  id String @id @default(uuid())
+  authorId String
+  author Users @relation(fields: [authorId],references: [id])
+  content String?
+  media String[]
+  replies Reply[]
+  retweets Retweet[]
+  likes Like[]
+  createdAt DateTime @default(now()) 
+  @@unique([createdAt, id])
+}
+model Retweet {
+  id String @id @default(uuid())
+  content String?
+  media String[]
+  tweetId String
+  tweet Tweet @relation(fields: [tweetId],references: [id])
+  authorId String
+  author Users @relation(fields: [authorId],references: [id])
+  likes Like[]
+  createdAt DateTime @default(now())
+}
+model Reply {
+  id String @id @default(uuid())
+  content String?
+  media String[]
+  tweetId String
+  tweet Tweet @relation(fields: [tweetId],references: [id])
+  authorId String
+  author Users @relation(fields: [authorId],references: [id])
+  likes Like[]
+  createdAt DateTime @default(now())
+}
+model Like {
+  id String @id @default(uuid())
+  userId String
+  user Users @relation(fields: [userId],references: [id])
+  tweetId String?
+  tweet Tweet? @relation(fields: [tweetId],references: [id])
+  retweetId String?
+  retweet Retweet? @relation(fields: [retweetId],references: [id])
+  replyId String?
+  reply Reply? @relation(fields: [replyId],references: [id])
+  createdAt DateTime @default(now())
+  @@unique([userId,tweetId,retweetId,replyId])
+}
