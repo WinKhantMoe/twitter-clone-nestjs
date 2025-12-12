@@ -1,3 +1,4 @@
+import { GoogleLoginDTO } from '../auth/google-login-dto';
 import { fetch3Users } from './fetch-3each-user-dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { userResponse } from './user';
@@ -18,11 +19,12 @@ export class UsersService {
   
 
   async fetchSingleUser(loginUserDTO: loginUserDTO) { 
+    
     const filter : any[] = [];
     if(loginUserDTO.username !== undefined) filter.push({username : loginUserDTO.username});
     if(loginUserDTO.email !== undefined) filter.push({email : loginUserDTO.email});
     if(loginUserDTO.phone !== undefined) filter.push({phone : loginUserDTO.phone});
-
+    
     const user = await this.prisma.users.findFirst({where : {OR : filter},
     select :{
       id : true,
@@ -37,13 +39,18 @@ export class UsersService {
       password : true
     }});
  
-
-    // console.log(filter[0]);;
-    // console.log(loginUserDTO.password);
-    // console.log(user.password);
+    
+    
     return user;
 
 
+  }
+  async checkGoogleUser(GoogleLoginDTO : GoogleLoginDTO) {
+    
+    const user = await this.prisma.users.findFirst({where : {email : GoogleLoginDTO.email}});
+    
+
+    return user;
   }
   async encryptPassword(plainText,saltRounds) {
     return await bcrypt.hash(plainText,saltRounds)

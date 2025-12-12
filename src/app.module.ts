@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { LikesModule } from './likes/likes.module';
 import { RetweetsModule } from './retweets/retweets.module';
 import { RepliesModule } from './replies/replies.module';
+import { DraftsModule } from './drafts/drafts.module';
 
 
 @Module({
@@ -19,6 +20,7 @@ import { RepliesModule } from './replies/replies.module';
     LikesModule,
     RetweetsModule,
     RepliesModule,
+    DraftsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
