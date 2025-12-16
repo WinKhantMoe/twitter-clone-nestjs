@@ -6,9 +6,6 @@ export class likeDTO {
   tweetId : string;
   @IsOptional()
   @IsUUID()
-  userId : string;
-  @IsOptional()
-  @IsUUID()
   retweetId : string;
   @IsOptional()
   @IsUUID()

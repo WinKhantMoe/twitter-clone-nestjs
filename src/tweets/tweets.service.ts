@@ -1,3 +1,4 @@
+import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { tweetTDO } from './tweet-dto';
@@ -6,7 +7,8 @@ import { tweetTDO } from './tweet-dto';
 @Injectable()
 export class TweetsService {
   constructor(
-    private prisma : PrismaService
+    private readonly prisma : PrismaService,
+    private readonly JwtService : JwtService
   ){}
   async makeTweet(tweetTDO: tweetTDO){
     
@@ -33,7 +35,10 @@ export class TweetsService {
   }
   });
   }
-  async fetchTweets(cursor : string | undefined | null ,limitNumber : number){
+  async fetchTweets(authorization : string,cursor : string | undefined | null ,limitNumber : number){
+    const token = authorization.replace("Bearer ",'');
+    const response = this.JwtService.verify(token,{secret : process.env.JWT_SECRET});
+    
     const tweets = await this.prisma.tweet.findMany({
       take : limitNumber + 1,
       orderBy : { id : "desc"},
@@ -47,7 +52,23 @@ export class TweetsService {
             userTag : true,
             user_profile_image : true
           }
+        },
+        _count : {
+          select : {
+            likes : true,
+            replies : true,
+            retweets : true
+          }
+        },
+        likes : {
+          where : {
+            userId : response.id
+          },
+          select : {
+            id : true
+          }
         }
+        
       }
     })
 

@@ -50,7 +50,7 @@ export class AuthService {
       if(!passwordMatched) throw new UnauthorizedException('Password is incorrect');
 
       const accessToken = await this.JwtService.signAsync({id : user.id, username : user.username});
-
+      
       const {password,...safeUser} = user;
 
 

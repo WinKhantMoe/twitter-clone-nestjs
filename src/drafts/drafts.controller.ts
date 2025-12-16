@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Query, Delete } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Query, Delete, Req, Header, Headers } from '@nestjs/common';
 import { DraftsService } from './drafts.service';
 import { draftDTO } from './draft-dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -17,14 +17,14 @@ export class DraftsController {
     await this.draftsService.saveDraft(draftDTO);
   }
   @UseGuards(JwtAuthGuard)
-  @Post('fetchDrafts')
+  @Get('fetchDrafts')
     async fetchTweets(
-      @Body('id') id : string,
+      @Headers('authorization') authorization : string,
       @Query('cursor') cursor ?: string,
       @Query('limit') limit ?: string 
     ){
       const limitNumber = parseInt(limit ?? '10',10);
-      return await this.draftsService.fetchDrafts(id,cursor,limitNumber);
+      return await this.draftsService.fetchDrafts(authorization,cursor,limitNumber);
     }
   @UseGuards(JwtAuthGuard)
   @Delete('deleteDrafts')
